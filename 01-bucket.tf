@@ -4,6 +4,6 @@ resource "aws_s3_bucket" "website" {
 
   tags = {
     Name        = "Kirk Static Website"
-    Environment = "Dev"
+    Environment = "Dev2"
   }
 }
