@@ -1,12 +1,12 @@
 resource "aws_cloudfront_distribution" "s3_distribution" {
   origin {
-    domain_name              = aws_s3_bucket.b.bucket_regional_domain_name # <bucket name>.<region>.s3.com
+    domain_name              = aws_s3_bucket.website.bucket_regional_domain_name # <bucket name>.<region>.s3.com
     origin_access_control_id = aws_cloudfront_origin_access_control.website.id
     origin_id                = local.origin_id
   }
 
   enabled             = true
-  comment             = "Some comment"
+  comment             = "${local.name_prefix} static website"
   default_root_object = "index.html"
 
   default_cache_behavior {
@@ -16,12 +16,12 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
     forwarded_values {
       query_string = false # Set false for static content (images, CSS, JS) that doesn't change with query params.
-    # CloudFront will NOT forward query strings to the origin.
-    # Example:
-    # - Request:   https://example.com/products?id=123
-    # - CloudFront strips "?id=123" and caches just: https://example.com/products
-    # - Result: All users get the same cached response, regardless of ?id=123
-    # Set query_string = true for dynamic content where query params affect the response (e.g., search pages).
+      # CloudFront will NOT forward query strings to the origin.
+      # Example:
+      # - Request:   https://example.com/products?id=123
+      # - CloudFront strips "?id=123" and caches just: https://example.com/products
+      # - Result: All users get the same cached response, regardless of ?id=123
+      # Set query_string = true for dynamic content where query params affect the response (e.g., search pages).
 
 
       cookies {
@@ -49,8 +49,8 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
         forward = "none"
       }
     }
-    
-     
+
+
     viewer_protocol_policy = "allow-all"
     min_ttl                = 0
     default_ttl            = 86400
@@ -63,17 +63,16 @@ resource "aws_cloudfront_distribution" "s3_distribution" {
 
   restrictions {
     geo_restriction {
-      restriction_type = "whitelist"
-      locations        = ["US", "CA", "GB", "DE"]
+      restriction_type = "none"
+      locations        = []
     }
   }
 
   tags = {
-    Environment = "production"
+    Environment = var.env
   }
 
   viewer_certificate {
-    acm_certificate_arn = data.aws_acm_certificate.my_domain.arn
-    ssl_support_method  = "sni-only"
+    cloudfront_default_certificate = true
   }
 }

@@ -1,9 +1,9 @@
 resource "aws_s3_bucket" "website" {
-  bucket_prefix = "kirk-static-website-"
+  bucket        = lower("${local.name_prefix}-${local.bucket_suffix}")
   force_destroy = true
 
   tags = {
-    Name        = "Kirk Static Website"
-    Environment = "Dev"
+    Name        = local.name_prefix
+    Environment = var.env
   }
 }

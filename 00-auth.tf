@@ -4,13 +4,17 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 6.18.0"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "3.9.0"
+    }
   }
 }
 
 provider "aws" {
   # Configuration options
 
-  region = "us-west-2"
+  region  = "us-west-2"
   profile = "default" # Uses AWS credentials from [default] profile in ~/.aws/credentials
 
   default_tags {
@@ -25,7 +29,7 @@ provider "aws" {
 terraform {
   backend "s3" {
     bucket = "kirkdevsecops-terraform-state"
-    key = "class7/terraform/dev/kirk-static-website/terraform.tfstate"
+    key    = "class7/terraform/dev/kirk-static-website/terraform.tfstate"
     region = "us-west-2"
   }
 }

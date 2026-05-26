@@ -1,32 +1,41 @@
 
-# CloudFront with S3 Origin deployed with Terraform: Dec 14th 2025
-------
+# CloudFront with S3 Origin deployed with Terraform
+
+This project deploys a private S3 static site behind CloudFront. The S3 bucket is not public; CloudFront reaches the bucket through Origin Access Control (OAC).
 
 ## Terraform
 
-### Config that is not "default":
-- added a bucket policy
-- block all public access (or not)
-make a policy
+### Config that is not default
+
+- Creates an S3 bucket for static site files.
+- Uploads `index.html`, `error.html`, and image assets.
+- Blocks direct public access to the bucket.
+- Creates a CloudFront Origin Access Control.
+- Adds an S3 bucket policy that allows reads only from this CloudFront distribution.
+- Uses the default CloudFront certificate for the generated CloudFront domain.
 
 ---
 
-### Resource to create:
+### Resources created
+
 - s3 bucket
 - s3 objects
-- public access block (we are disabling this)
-- make a policy (explain jsonencode())
-- static website config
+- public access block
+- bucket policy with `jsonencode()`
+- CloudFront Origin Access Control
+- CloudFront distribution
 
 ---
 
-### Desired output:
-CF URL (fully formed)
+### Desired output
+
+- CloudFront URL
 - bucket name
+- bucket ARN
 
 ---
 
-### policy
+### Policy pattern
 
 ```bash
 policy = jsonencode({
@@ -42,6 +51,8 @@ policy = jsonencode({
   ]
 })
 ```
+
+In this repo, the policy grants `s3:GetObject` to the CloudFront service principal and limits access with `AWS:SourceArn` so only this distribution can read the bucket.
 
 ### content types
 
